@@ -2,7 +2,11 @@ package client;
 
 import server.RpcMethod;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * RpcClient中调用以下的方法
@@ -16,6 +20,9 @@ import java.math.BigInteger;
 public class RpcClient {
 
     public static void main(String[] args) {
-
+        //RPC client需要对请求进行包装，让服务端能够接受请求情况
+        final RpcImpl rpcClient = new RpcImpl();
+        rpcClient.init();
+        System.out.println(rpcClient.add(2, 3));
     }
 }
