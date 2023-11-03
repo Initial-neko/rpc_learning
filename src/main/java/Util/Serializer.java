@@ -6,7 +6,7 @@ import java.io.OutputStream;
 
 public interface Serializer {
 
-    OutputStream serialize(OutputStream stream, Object obj) throws IOException;
+    byte[] serialize(Object obj);
 
-    Object deserialize(InputStream inputStream);
+    Object deserialize(byte[] bytes);
 }

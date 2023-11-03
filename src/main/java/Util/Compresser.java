@@ -1,5 +1,7 @@
 package Util;
 
+import java.io.OutputStream;
+
 public interface Compresser {
 
     byte[] compress(byte[] bytes);

@@ -1,8 +1,9 @@
 package client;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
-public interface RpcProtocol {
+public interface RpcProtocol extends Serializable {
 
     public int add(int a, int b);
 

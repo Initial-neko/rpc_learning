@@ -1,16 +1,17 @@
 package server;
 
 import Util.JavaSerializer;
+import Util.SerialCompress;
 import Util.Serializer;
 import client.RpcBody;
-import client.RpcImpl;
+import org.openjdk.jol.util.IOUtils;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -31,6 +32,7 @@ public class RpcServer {
         for(Method method: methods){
             rpcMap.put(method.getName(), method);
         }
+        System.out.println("init success! rpcMap:" + rpcMap);
     }
 
     //这里启动一个服务器,通过服务器来接收请求，并且找到合适的RPC方法进行调用，返回结果
@@ -41,24 +43,40 @@ public class RpcServer {
 
     public void handleRpcCall(Socket socket, RpcBody readObject) throws IOException, IllegalAccessException, InvocationTargetException {
         RpcBody rpcBody = readObject;
-        if(rpcBody.getMethodName().equals("add")){
-            final Method add = rpcMap.get("add");
-            final Object invoke = add.invoke(new RpcMethod(), rpcBody.getArguments());
-            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-            oos.writeObject(invoke);
-            logger.info("result is " + invoke);
+        Method invokeMethod = null;
+        switch (rpcBody.getMethodName()){
+            case "add":
+                invokeMethod = rpcMap.get("add");
+                break;
+            case "calculate":
+                invokeMethod = rpcMap.get("calculate");
+                break;
+            case "drawDragon":
+                invokeMethod = rpcMap.get("drawDragon");
+                break;
+            default: throw new IllegalAccessException("cannot process method:" + readObject.getMethodName());
         }
+        final Object invoke = invokeMethod.invoke(new RpcMethod(), rpcBody.getArguments());
+        System.out.println(invoke);
+        final byte[] invokeBytes = SerialCompress.serialCompress(invoke);
+        final OutputStream outputStream = socket.getOutputStream();
+        outputStream.write(invokeBytes);
+        outputStream.flush();
+        logger.info("result is " + invoke);
     }
 
     public void run() throws IOException {
         init();
-        Serializer serializer = new JavaSerializer();
         try(ServerSocket listener = new ServerSocket(9090)){
             while (true){
                 try(Socket socket = listener.accept()) {
 
-                    final ObjectInputStream stream = new ObjectInputStream(socket.getInputStream());
-                    final Object readObject = stream.readObject();
+                    byte[] bytes = IOUtils.readAllBytes(socket.getInputStream());
+                    System.out.println(Arrays.toString(bytes));
+
+//                    final byte[] bytes = IOUtils.fromInputStreamToBytes(inputStream);
+                    final Object readObject = SerialCompress.deSerialUnCompress(bytes);
+
                     logger.info("request is " + readObject);
 
                     if(readObject instanceof RpcBody){

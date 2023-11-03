@@ -1,12 +1,6 @@
 package client;
 
-import server.RpcMethod;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * RpcClient中调用以下的方法
@@ -24,5 +18,7 @@ public class RpcClient {
         final RpcImpl rpcClient = new RpcImpl();
         rpcClient.init();
         System.out.println(rpcClient.add(2, 3));
+//        System.out.println(rpcClient.calculate(BigInteger.valueOf(2434322), BigInteger.valueOf(2324242)));
+//        System.out.println(rpcClient.drawDragon(12));
     }
 }

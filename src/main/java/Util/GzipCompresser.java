@@ -8,6 +8,14 @@ import java.util.Arrays;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+/**
+ * object => serialize => compress => socket-outStream
+ *                                                  ||
+ *                                                  V
+ * object <= deserialize <= decompress <= socket-inputStream
+ *
+ *
+ */
 public class GzipCompresser implements Compresser{
 
 

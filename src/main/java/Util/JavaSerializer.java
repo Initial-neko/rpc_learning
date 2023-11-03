@@ -9,15 +9,20 @@ public class JavaSerializer implements Serializer{
 
 
     @Override
-    public OutputStream serialize(OutputStream stream, Object obj) throws IOException {
-        final ObjectOutputStream outputStream = new ObjectOutputStream(stream);
-        outputStream.writeObject(obj);
-        return outputStream;
+    public byte[] serialize(Object obj) {
+        final ByteArrayOutputStream bao = new ByteArrayOutputStream();
+        try (ObjectOutputStream oos = new ObjectOutputStream(bao)) {
+            oos.writeObject(obj);
+        }catch (IOException ioe){
+            ioe.printStackTrace();
+        }
+        return bao.toByteArray();
     }
 
     @Override
-    public Object deserialize(InputStream inputStream) {
-        try(ObjectInputStream ois = new ObjectInputStream(inputStream)) {
+    public Object deserialize(byte[] bytes) {
+        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+        try(ObjectInputStream ois = new ObjectInputStream(byteArrayInputStream)) {
             Object obj = ois.readObject();
             return obj;
         }catch (IOException | ClassNotFoundException ioe){
@@ -27,7 +32,6 @@ public class JavaSerializer implements Serializer{
     }
     
     public static void main(String[] args) {
-        String abc = "123123123";
-        final JavaSerializer javaSerializer = new JavaSerializer();
+
     }
 }
