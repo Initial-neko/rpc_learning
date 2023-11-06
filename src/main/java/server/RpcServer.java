@@ -1,10 +1,10 @@
 package server;
 
+import Util.IOUtils;
 import Util.JavaSerializer;
 import Util.SerialCompress;
 import Util.Serializer;
 import client.RpcBody;
-import org.openjdk.jol.util.IOUtils;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -70,8 +70,8 @@ public class RpcServer {
         try(ServerSocket listener = new ServerSocket(9090)){
             while (true){
                 try(Socket socket = listener.accept()) {
-
-                    byte[] bytes = IOUtils.readAllBytes(socket.getInputStream());
+                    socket.setSoTimeout(3000);
+                    byte[] bytes = IOUtils.fromInputStreamToBytes(socket.getInputStream());
                     System.out.println(Arrays.toString(bytes));
 
 //                    final byte[] bytes = IOUtils.fromInputStreamToBytes(inputStream);

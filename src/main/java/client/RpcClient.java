@@ -18,7 +18,7 @@ public class RpcClient {
         final RpcImpl rpcClient = new RpcImpl();
         rpcClient.init();
         System.out.println(rpcClient.add(2, 3));
-//        System.out.println(rpcClient.calculate(BigInteger.valueOf(2434322), BigInteger.valueOf(2324242)));
-//        System.out.println(rpcClient.drawDragon(12));
+        System.out.println(rpcClient.calculate(BigInteger.valueOf(2434322), BigInteger.valueOf(2324242)));
+        System.out.println(rpcClient.drawDragon(12));
     }
 }

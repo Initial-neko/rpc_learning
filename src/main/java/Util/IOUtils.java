@@ -11,9 +11,11 @@ public class IOUtils {
             int bytesRead;
             while ((bytesRead = inputStream.read(buffer)) != -1) {
                 bao.write(buffer, 0, bytesRead);
+                if(bytesRead != buffer.length){
+                    break;
+                }
             }
             byte[] bytes = bao.toByteArray();
-            System.out.println(Arrays.toString(bytes));
             return bytes;
         }catch (Exception e){
             e.printStackTrace();

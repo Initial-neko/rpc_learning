@@ -1,9 +1,9 @@
 package client;
 
+import Util.IOUtils;
 import Util.JavaSerializer;
 import Util.SerialCompress;
 import Util.Serializer;
-import org.openjdk.jol.util.IOUtils;
 
 import java.io.*;
 import java.lang.reflect.Method;
@@ -47,8 +47,7 @@ public class RpcImpl implements RpcProtocol{
 
 
     public Object getResponse(Socket socket) throws IOException, ClassNotFoundException {
-        final byte[] bytes = IOUtils.readAllBytes(socket.getInputStream());
-        System.out.println("input read!");
+        final byte[] bytes = IOUtils.fromInputStreamToBytes(socket.getInputStream());
         Object response = SerialCompress.deSerialUnCompress(bytes);
         System.out.println("get response " + response);
         return response;
