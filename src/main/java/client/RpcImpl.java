@@ -1,18 +1,20 @@
 package client;
 
-import Util.IOUtils;
-import Util.JavaSerializer;
+import Util.*;
+import com.alibaba.fastjson.JSONObject;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.api.CuratorWatcher;
+import serializer.JavaSerializer;
 import Util.SerialCompress;
-import Util.Serializer;
+import serializer.Serializer;
+import server.RemoteService;
 
 import java.io.*;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.math.BigInteger;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class RpcImpl implements RpcProtocol{
 
@@ -21,17 +23,39 @@ public class RpcImpl implements RpcProtocol{
 
     private Serializer serializer = new JavaSerializer();
 
-    public String getProvider(){
-        return "127.0.0.1";
+    private CuratorFramework client;
+
+    private Map<String, List<RemoteService>> serverMap = new HashMap<>();
+
+    public List<RemoteService> getProvider(String name) throws Exception {
+        String path = "/rpc/" + name + "/service";
+        System.out.println(path);
+        List<String> children = client.getChildren().forPath(path);
+        final List<RemoteService> services = Optional.ofNullable(children).orElse(new ArrayList<>()).stream().map((child) -> {
+            final RemoteService service = JSONObject.parseObject(child, RemoteService.class);
+            return service;
+        }).collect(Collectors.toList());
+        serverMap.put(name, services);
+        return services;
     }
 
-    public void init(){
+    public void init() throws Exception {
         final Class<RpcImpl> rpcClass = RpcImpl.class;
         final Method[] methods = rpcClass.getMethods();
         for(Method method: methods){
             final Class<?>[] parameters = method.getParameterTypes();
             rpcMap.put(method.getName(), new RpcBody(method.getName(), parameters));
         }
+        ZkClient.init("127.0.0.1:2181", "");
+        client = ZkClient.get();
+        String path = "/rpc/" + "remote" + "/service";
+        client.getData().usingWatcher((CuratorWatcher) watchedEvent -> {
+            serverMap.clear();
+            final List<RemoteService> remote = getProvider("remote");
+            System.out.println("remote node:" + remote);
+        }).forPath(path);
+        getProvider("remote");
+        System.out.println("Rpc client init finish!");
     }
 
     public Map<String, RpcBody> getRpcMap() {
@@ -53,10 +77,17 @@ public class RpcImpl implements RpcProtocol{
         return response;
     }
 
+    public Socket getBalanceSocket(String name) throws IOException {
+        final List<RemoteService> services = serverMap.get(name);
+        int rand_index = (int)(Math.random() * services.size());
+        final RemoteService service = services.get(rand_index);
+        return new Socket(service.getIp(), service.getPort());
+    }
+
     @Override
     public int add(int a, int b) {
         try {
-            Socket socket = new Socket(getProvider(), 9090);
+            Socket socket = getBalanceSocket("remote");
             final RpcBody add = rpcMap.get("add");
             add.setArguments(new Object[]{a, b});
             writeToSocket(socket, add);
@@ -68,11 +99,7 @@ public class RpcImpl implements RpcProtocol{
             }else{
                 throw new InternalError("cannot get result from add method!");
             }
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return 0;
@@ -81,7 +108,7 @@ public class RpcImpl implements RpcProtocol{
     @Override
     public int calculate(BigInteger big0, BigInteger big1) {
         try {
-            Socket socket = new Socket(getProvider(), 9090);
+            Socket socket = getBalanceSocket("remote");
             final RpcBody rpcBody = rpcMap.get("calculate");
             rpcBody.setArguments(new Object[]{big0, big1});
             writeToSocket(socket, rpcBody);
@@ -92,11 +119,7 @@ public class RpcImpl implements RpcProtocol{
             }else{
                 throw new InternalError("cannot get result from add method!");
             }
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return 0;
@@ -105,7 +128,7 @@ public class RpcImpl implements RpcProtocol{
     @Override
     public String drawDragon(int num) {
         try {
-            Socket socket = new Socket(getProvider(), 9090);
+            Socket socket = getBalanceSocket("remote");
             final RpcBody rpcBody = rpcMap.get("drawDragon");
             rpcBody.setArguments(new Object[]{num});
             writeToSocket(socket, rpcBody);
@@ -116,11 +139,7 @@ public class RpcImpl implements RpcProtocol{
             }else{
                 throw new InternalError("cannot get result from rpcBody method!");
             }
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return "";

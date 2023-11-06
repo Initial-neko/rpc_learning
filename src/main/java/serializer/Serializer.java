@@ -1,4 +1,4 @@
-package Util;
+package serializer;
 
 import java.io.IOException;
 import java.io.InputStream;

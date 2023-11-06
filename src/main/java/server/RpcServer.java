@@ -1,16 +1,20 @@
 package server;
 
-import Util.IOUtils;
-import Util.JavaSerializer;
-import Util.SerialCompress;
-import Util.Serializer;
+import Util.*;
 import client.RpcBody;
+import com.alibaba.fastjson.JSONObject;
+import compress.CompresserEnum;
+import org.apache.curator.framework.CuratorFramework;
+import Util.SerialCompress;
+import serializer.SerializerEnum;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,19 +30,40 @@ public class RpcServer {
         return rpcMap;
     }
 
+    private static int port = 9090;
+
+    private CuratorFramework client;
+
     public void init(){
         final Class<RpcMethod> rpcClass = RpcMethod.class;
         final Method[] methods = rpcClass.getMethods();
         for(Method method: methods){
             rpcMap.put(method.getName(), method);
         }
+        ZkClient.init("127.0.0.1:2181", "");
+        client = ZkClient.get();
         System.out.println("init success! rpcMap:" + rpcMap);
     }
 
-    //这里启动一个服务器,通过服务器来接收请求，并且找到合适的RPC方法进行调用，返回结果
-    public static void main(String[] args) throws IOException {
+    //name = service + ipAddress + port
+    public void bindRemoteService(RemoteService service) throws Exception {
+        String serviceJson = JSONObject.toJSONString(service);
+        String zkPath = "/rpc/" + service.getName() + "/service";
+        String uri = zkPath + "/" + serviceJson;
+        ZkClient.checkExistsAndCreate(client, zkPath);
+        ZkClient.checkExistsAndCreate(client, uri);
+    }
 
+    //这里启动一个服务器,通过服务器来接收请求，并且找到合适的RPC方法进行调用，返回结果
+    public static void main(String[] args) throws Exception {
+        if(args.length != 0){
+            port = Integer.parseInt(args[0]);
+        }
         new RpcServer().run();
+    }
+
+    public String getLocalIp() throws UnknownHostException {
+        return InetAddress.getLocalHost().getHostName();
     }
 
     public void handleRpcCall(Socket socket, RpcBody readObject) throws IOException, IllegalAccessException, InvocationTargetException {
@@ -65,9 +90,14 @@ public class RpcServer {
         logger.info("result is " + invoke);
     }
 
-    public void run() throws IOException {
+    public void run() throws Exception {
         init();
-        try(ServerSocket listener = new ServerSocket(9090)){
+        bindRemoteService(new RemoteService(
+                "remote",
+                getLocalIp(), port,
+                SerializerEnum.JAVA.name(), CompresserEnum.GZIP.name()
+        ));
+        try(ServerSocket listener = new ServerSocket(port)){
             while (true){
                 try(Socket socket = listener.accept()) {
                     socket.setSoTimeout(3000);

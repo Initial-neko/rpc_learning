@@ -1,4 +1,4 @@
-package Util;
+package compress;
 
 import java.io.OutputStream;
 

@@ -1,4 +1,4 @@
-package Util;
+package compress;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -16,7 +16,7 @@ import java.util.zip.GZIPOutputStream;
  *
  *
  */
-public class GzipCompresser implements Compresser{
+public class GzipCompresser implements Compresser {
 
 
     @Override

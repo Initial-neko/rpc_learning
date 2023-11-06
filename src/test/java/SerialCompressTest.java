@@ -1,7 +1,7 @@
-import Util.GzipCompresser;
-import Util.JavaSerializer;
+import compress.GzipCompresser;
+import serializer.JavaSerializer;
 import Util.SerialCompress;
-import Util.Serializer;
+import serializer.Serializer;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;

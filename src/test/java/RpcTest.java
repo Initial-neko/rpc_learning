@@ -15,7 +15,7 @@ public class RpcTest {
 
 
     @Test
-    public void testReflect() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public void testReflect() throws Exception {
         final RpcServer rpcServer = new RpcServer();
         rpcServer.init();
         final RpcImpl rpc = new RpcImpl();

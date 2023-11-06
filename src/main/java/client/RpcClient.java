@@ -13,7 +13,7 @@ import java.math.BigInteger;
 //这里启动一个客户端，通过客户端来进行RPC调用
 public class RpcClient {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         //RPC client需要对请求进行包装，让服务端能够接受请求情况
         final RpcImpl rpcClient = new RpcImpl();
         rpcClient.init();

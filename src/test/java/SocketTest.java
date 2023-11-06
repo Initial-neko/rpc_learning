@@ -4,6 +4,7 @@ import org.openjdk.jol.util.IOUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -31,9 +32,6 @@ public class SocketTest {
                     System.out.println(recvLen);
                     System.out.println(new String(recvBuf, 0, recvLen));
                     bao.write(recvBuf);
-                    if(recvLen != recvBuf.length){
-                        break;
-                    }
                 }
 
                 OutputStream out = socket.getOutputStream();

@@ -1,5 +1,10 @@
 package Util;
 
+import compress.Compresser;
+import compress.GzipCompresser;
+import serializer.JavaSerializer;
+import serializer.Serializer;
+
 public class SerialCompress {
 
     private static Serializer serializer = new JavaSerializer();
