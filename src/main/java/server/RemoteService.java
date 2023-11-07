@@ -18,6 +18,9 @@ public class RemoteService implements Serializable {
         this.compressProto = compressProto;
     }
 
+    public RemoteService() {
+    }
+
     public String getSerialProto() {
         return serialProto;
     }
