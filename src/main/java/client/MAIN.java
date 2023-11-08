@@ -12,7 +12,7 @@ import java.math.BigInteger;
  */
 
 //这里启动一个客户端，通过客户端来进行RPC调用
-public class RpcClient {
+public class MAIN {
 
     public static void main(String[] args) throws Exception {
         //RPC client需要对请求进行包装，让服务端能够接受请求情况
@@ -22,6 +22,6 @@ public class RpcClient {
         RpcProtocol proxy = (RpcProtocol) Proxy.newProxyInstance(RpcImpl.class.getClassLoader(), new Class[]{RpcProtocol.class}, handler);
         System.out.println(proxy.add(2, 3));
         System.out.println(proxy.calculate(BigInteger.valueOf(2434322), BigInteger.valueOf(2324242)));
-        System.out.println(proxy.drawDragon(12));
+        System.out.println(proxy.drawDragon(1));
     }
 }

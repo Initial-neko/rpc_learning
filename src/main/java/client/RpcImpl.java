@@ -30,13 +30,13 @@ public class RpcImpl implements RpcProtocol{
 
     public List<RemoteService> getProvider(String name) throws Exception {
         String path = "/rpc/" + name + "/service";
-        System.out.println(path);
         List<String> children = client.getChildren().forPath(path);
         final List<RemoteService> services = Optional.ofNullable(children).orElse(new ArrayList<>()).stream().map((child) -> {
             final RemoteService service = JSONObject.parseObject(child, RemoteService.class);
             return service;
         }).collect(Collectors.toList());
         serverMap.put(name, services);
+        System.out.println("ServiceMap:" + serverMap);
         return services;
     }
 
@@ -83,6 +83,7 @@ public class RpcImpl implements RpcProtocol{
         final List<RemoteService> services = serverMap.get(name);
         int rand_index = (int)(Math.random() * services.size());
         final RemoteService service = services.get(rand_index);
+        System.out.println("choose Name Service:" + service);
         return new Socket(service.getIp(), service.getPort());
     }
 

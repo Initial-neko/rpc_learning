@@ -4,6 +4,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.ACLProvider;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Stat;
@@ -73,11 +74,12 @@ public class ZkClient {
         }
     }
 
-    public static void checkExistsAndCreate(CuratorFramework zkClient, String path) throws Exception {
+    public static void checkExistsAndCreate(CuratorFramework zkClient, String path, CreateMode mode) throws Exception {
         final Stat stat = zkClient.checkExists().forPath(path);
         if(stat == null){
-            zkClient.create().creatingParentsIfNeeded().forPath(path);
+            zkClient.create().creatingParentsIfNeeded().withMode(mode).forPath(path);
         }
+
     }
 
 

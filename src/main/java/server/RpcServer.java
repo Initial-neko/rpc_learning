@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import compress.CompresserEnum;
 import org.apache.curator.framework.CuratorFramework;
 import Util.SerialCompress;
+import org.apache.zookeeper.CreateMode;
 import serializer.SerializerEnum;
 
 import java.io.*;
@@ -50,8 +51,8 @@ public class RpcServer {
         String serviceJson = JSONObject.toJSONString(service);
         String zkPath = "/rpc/" + service.getName() + "/service";
         String uri = zkPath + "/" + serviceJson;
-        ZkClient.checkExistsAndCreate(client, zkPath);
-        ZkClient.checkExistsAndCreate(client, uri);
+        ZkClient.checkExistsAndCreate(client, zkPath, CreateMode.PERSISTENT);
+        ZkClient.checkExistsAndCreate(client, uri, CreateMode.EPHEMERAL);
     }
 
     //这里启动一个服务器,通过服务器来接收请求，并且找到合适的RPC方法进行调用，返回结果
