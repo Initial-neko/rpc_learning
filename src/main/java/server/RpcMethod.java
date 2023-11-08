@@ -7,12 +7,12 @@ import java.math.BigInteger;
 public class RpcMethod implements RpcProtocol {
 
     @Override
-    public int add(int a, int b){
+    public Integer add(int a, int b){
         return a + b;
     }
 
     @Override
-    public int calculate(BigInteger big0, BigInteger big1){
+    public Integer calculate(BigInteger big0, BigInteger big1){
         return big0.add(big1).intValue();
     }
 

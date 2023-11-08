@@ -11,6 +11,7 @@ import server.RemoteService;
 
 import java.io.*;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.util.*;
@@ -58,6 +59,7 @@ public class RpcImpl implements RpcProtocol{
         System.out.println("Rpc client init finish!");
     }
 
+
     public Map<String, RpcBody> getRpcMap() {
         return rpcMap;
     }
@@ -85,8 +87,9 @@ public class RpcImpl implements RpcProtocol{
     }
 
     @Override
-    public int add(int a, int b) {
-        try {
+    public Integer add(int a, int b) {
+
+        /*try {
             Socket socket = getBalanceSocket("remote");
             final RpcBody add = rpcMap.get("add");
             add.setArguments(new Object[]{a, b});
@@ -101,13 +104,13 @@ public class RpcImpl implements RpcProtocol{
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
         return 0;
     }
 
     @Override
-    public int calculate(BigInteger big0, BigInteger big1) {
-        try {
+    public Integer calculate(BigInteger big0, BigInteger big1) {
+        /*try {
             Socket socket = getBalanceSocket("remote");
             final RpcBody rpcBody = rpcMap.get("calculate");
             rpcBody.setArguments(new Object[]{big0, big1});
@@ -121,13 +124,13 @@ public class RpcImpl implements RpcProtocol{
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
         return 0;
     }
 
     @Override
     public String drawDragon(int num) {
-        try {
+        /*try {
             Socket socket = getBalanceSocket("remote");
             final RpcBody rpcBody = rpcMap.get("drawDragon");
             rpcBody.setArguments(new Object[]{num});
@@ -141,7 +144,7 @@ public class RpcImpl implements RpcProtocol{
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
         return "";
     }
 }

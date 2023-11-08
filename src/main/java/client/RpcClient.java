@@ -1,5 +1,6 @@
 package client;
 
+import java.lang.reflect.Proxy;
 import java.math.BigInteger;
 
 /**
@@ -17,8 +18,10 @@ public class RpcClient {
         //RPC client需要对请求进行包装，让服务端能够接受请求情况
         final RpcImpl rpcClient = new RpcImpl();
         rpcClient.init();
-        System.out.println(rpcClient.add(2, 3));
-        System.out.println(rpcClient.calculate(BigInteger.valueOf(2434322), BigInteger.valueOf(2324242)));
-        System.out.println(rpcClient.drawDragon(12));
+        RpcHandler handler = new RpcHandler(rpcClient);
+        RpcProtocol proxy = (RpcProtocol) Proxy.newProxyInstance(RpcImpl.class.getClassLoader(), new Class[]{RpcProtocol.class}, handler);
+        System.out.println(proxy.add(2, 3));
+        System.out.println(proxy.calculate(BigInteger.valueOf(2434322), BigInteger.valueOf(2324242)));
+        System.out.println(proxy.drawDragon(12));
     }
 }

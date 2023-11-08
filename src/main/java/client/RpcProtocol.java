@@ -5,9 +5,9 @@ import java.math.BigInteger;
 
 public interface RpcProtocol extends Serializable {
 
-    public int add(int a, int b);
+    public Integer add(int a, int b);
 
-    public int calculate(BigInteger big0, BigInteger big1);
+    public Integer calculate(BigInteger big0, BigInteger big1);
 
     public String drawDragon(int num);
 }
