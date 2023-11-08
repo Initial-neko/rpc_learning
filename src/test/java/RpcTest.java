@@ -32,6 +32,8 @@ public class RpcTest {
         final Object invoke = add.invoke(new RpcMethod(), rpcBody.getArguments());
         System.out.println(invoke);
 
+        System.exit(0);
+
     }
 
 }

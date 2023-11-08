@@ -29,7 +29,7 @@ public class GzipCompresser implements Compresser {
             return new byte[0];
         }
         final byte[] new_bytes = byteOutputStream.toByteArray();
-        System.out.println("compress bytes from " + bytes.length + " to " + new_bytes.length);
+//        System.out.println("compress bytes from " + bytes.length + " to " + new_bytes.length);
         return new_bytes;
     }
 
@@ -53,7 +53,7 @@ public class GzipCompresser implements Compresser {
         }
         final byte[] raw_bytes = bao.toByteArray();
 
-        System.out.println("uncompress bytes from " + bytes.length + " to " + raw_bytes.length);
+//        System.out.println("uncompress bytes from " + bytes.length + " to " + raw_bytes.length);
         return raw_bytes;
     }
 
