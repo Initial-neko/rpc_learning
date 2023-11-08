@@ -4,6 +4,7 @@ import Util.*;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.api.CuratorWatcher;
+import org.apache.zookeeper.Watcher;
 import serializer.JavaSerializer;
 import Util.SerialCompress;
 import serializer.Serializer;
@@ -50,15 +51,21 @@ public class RpcImpl implements RpcProtocol{
         ZkClient.init("127.0.0.1:2181", "");
         client = ZkClient.get();
         String path = "/rpc/" + "remote" + "/service";
-        client.getData().usingWatcher((CuratorWatcher) watchedEvent -> {
-            serverMap.clear();
-            final List<RemoteService> remote = getProvider("remote");
-            System.out.println("remote node:" + remote);
-        }).forPath(path);
+        addServerWatch(path);
         getProvider("remote");
         System.out.println("Rpc client init finish!");
     }
 
+    public void addServerWatch(String path) throws Exception {
+        client.getChildren().usingWatcher((CuratorWatcher) watchedEvent -> {
+            if(watchedEvent.getType().equals(Watcher.Event.EventType.NodeChildrenChanged)) {
+                serverMap.clear();
+                final List<RemoteService> remote = getProvider("remote");
+                System.out.println("remote node:" + remote);
+                addServerWatch(path);
+            }
+        }).forPath(path);
+    }
 
     public Map<String, RpcBody> getRpcMap() {
         return rpcMap;

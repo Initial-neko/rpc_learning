@@ -44,6 +44,8 @@ public class RpcServer {
         ZkClient.init("127.0.0.1:2181", "");
         client = ZkClient.get();
         System.out.println("init success! rpcMap:" + rpcMap);
+
+
     }
 
     //name = service + ipAddress + port

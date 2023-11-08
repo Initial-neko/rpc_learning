@@ -23,5 +23,9 @@ public class MAIN {
         System.out.println(proxy.add(2, 3));
         System.out.println(proxy.calculate(BigInteger.valueOf(2434322), BigInteger.valueOf(2324242)));
         System.out.println(proxy.drawDragon(1));
+
+        while (true){
+
+        }
     }
 }
